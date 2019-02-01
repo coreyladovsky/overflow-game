@@ -26,8 +26,11 @@ export default class Game extends React.Component {
     }
     this.setState(
       { grid, activeColor: grid[0][0].color },
-      this.activateAllConnected,
-      this.updateActiveColors
+      () => {
+
+        this.activateAllConnected()
+        this.updateActiveColors()
+      }
     );
   }
 
@@ -67,37 +70,25 @@ export default class Game extends React.Component {
     let [first, last] = pos;
     if (last > 0) {
       let temp = board[first][last - 1];
-      if (
-        temp.active &&
-        this.state.activeColor === board[first][last].color
-      ) {
+      if (temp.active && this.state.activeColor === board[first][last].color) {
         return true;
       }
     }
     if (last < 11) {
       let temp = board[first][last + 1];
-      if (
-        temp.active &&
-        this.state.activeColor === board[first][last].color
-      ) {
+      if (temp.active && this.state.activeColor === board[first][last].color) {
         return true;
       }
     }
     if (first > 0) {
       let temp = board[first - 1][last];
-      if (
-        temp.active &&
-        this.state.activeColor === board[first][last].color
-      ) {
+      if (temp.active && this.state.activeColor === board[first][last].color) {
         return true;
       }
     }
     if (first < 11) {
       let temp = board[first + 1][last];
-      if (
-        temp.active &&
-        this.state.activeColor === board[first][last].color
-      ) {
+      if (temp.active && this.state.activeColor === board[first][last].color) {
         return true;
       }
     }
@@ -105,7 +96,15 @@ export default class Game extends React.Component {
   }
 
   handleClick = e => {
-    let pos = e.target.id.split(",").map(num => +num);
+    let [first, last] = e.target.id.split(",").map(num => +num);
+    this.setState(
+      { activeColor: this.state.grid[first][last].color },
+      () => {
+
+        this.activateAllConnected()
+        this.updateActiveColors()
+      }
+    );
   };
 
   render() {

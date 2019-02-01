@@ -2,7 +2,10 @@ import React from "react";
 import { DisplayRow } from "./DisplayRow";
 
 export default class Game extends React.Component {
-  state = { grid: [] };
+  state = {
+    grid: [],
+    count: 0
+  };
 
   componentDidMount() {
     this.newGrid();
@@ -21,7 +24,11 @@ export default class Game extends React.Component {
       }
       grid.push(row);
     }
-    this.setState({ grid });
+    this.setState(
+      { grid, activeColor: grid[0][0].color },
+      this.activateAllConnected,
+      this.updateActiveColors
+    );
   }
 
   createObj(active, location) {
@@ -30,10 +37,86 @@ export default class Game extends React.Component {
     return { color, active, location, id: location.toString() };
   }
 
-  render() {
-    let DisplayGrid = this.state.grid.map(row => {
-      return <DisplayRow tileRow={row} />;
+  updateActiveColors() {
+    let copyBoard = [...this.state.grid.map(row => [...row])];
+    let grid = copyBoard.map((row, i) => {
+      return row.map((tile, j) => {
+        if (tile.active) {
+          tile.color = this.state.activeColor;
+        }
+        return tile;
+      });
     });
-    return <div className="board">{DisplayGrid}</div>;
+    this.setState({ grid });
+  }
+
+  activateAllConnected() {
+    let copyBoard = [...this.state.grid.map(row => [...row])];
+    let grid = copyBoard.map((row, i) => {
+      return row.map((tile, j) => {
+        if (this.checkNeighbors([i, j], copyBoard)) {
+          tile.active = true;
+        }
+        return tile;
+      });
+    });
+    this.setState({ grid });
+  }
+
+  checkNeighbors(pos, board) {
+    let [first, last] = pos;
+    if (last > 0) {
+      let temp = board[first][last - 1];
+      if (
+        temp.active &&
+        this.state.activeColor === board[first][last].color
+      ) {
+        return true;
+      }
+    }
+    if (last < 11) {
+      let temp = board[first][last + 1];
+      if (
+        temp.active &&
+        this.state.activeColor === board[first][last].color
+      ) {
+        return true;
+      }
+    }
+    if (first > 0) {
+      let temp = board[first - 1][last];
+      if (
+        temp.active &&
+        this.state.activeColor === board[first][last].color
+      ) {
+        return true;
+      }
+    }
+    if (first < 11) {
+      let temp = board[first + 1][last];
+      if (
+        temp.active &&
+        this.state.activeColor === board[first][last].color
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  handleClick = e => {
+    let pos = e.target.id.split(",").map(num => +num);
+  };
+
+  render() {
+    console.log(this.state);
+    let DisplayGrid = this.state.grid.map((row, i) => {
+      return <DisplayRow tileRow={row} key={i} />;
+    });
+    return (
+      <div className="board" onClick={this.handleClick.bind(this)}>
+        {DisplayGrid}
+      </div>
+    );
   }
 }

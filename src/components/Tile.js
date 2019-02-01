@@ -1,8 +1,8 @@
 import React from 'react';
-import '../css/Title.css';
-export const Title = ({tile}) => {
+import '../css/Tile.css';
+export const Tile = ({tile}) => {
   return(
-    <div className={"tile " + tile.color}>
+    <div className={"tile " + tile.color} id={tile.id}>
     </div>
   )
 }

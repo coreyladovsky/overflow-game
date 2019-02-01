@@ -1,6 +1,6 @@
 import React from "react";
 import { DisplayRow } from "./DisplayRow";
-
+import '../css/Game.css';
 export default class Game extends React.Component {
   state = {
     grid: [],
@@ -97,6 +97,7 @@ export default class Game extends React.Component {
 
   handleClick = e => {
     let [first, last] = e.target.id.split(",").map(num => +num);
+    if(!this.state.grid[first][last]) return true;
     if(!this.state.grid[first][last].active) {
       this.setState({count: this.state.count + 1})
     }
@@ -111,19 +112,19 @@ export default class Game extends React.Component {
   };
 
   render() {
-    console.log(this.state);
     let DisplayGrid = this.state.grid.map((row, i) => {
       return <DisplayRow tileRow={row} key={i} />;
     });
     return (
       <>
-        <div>
-          Current Count: {this.state.count}
-        </div>
         <div className="board" onClick={this.handleClick.bind(this)}>
           {DisplayGrid}
+          <button className="new-game" onClick={this.newGrid.bind(this)}>New Game</button>
         </div>
-        <button onClick={this.newGrid.bind(this)}>New Game</button>
+        <div className="score">
+        Current Count:
+          <div className="score-number">{this.state.count}</div>
+        </div >
       </>
     );
   }

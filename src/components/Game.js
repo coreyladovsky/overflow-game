@@ -25,7 +25,7 @@ export default class Game extends React.Component {
       grid.push(row);
     }
     this.setState(
-      { grid, activeColor: grid[0][0].color },
+      { grid, count: 0, activeColor: grid[0][0].color },
       () => {
 
         this.activateAllConnected()
@@ -97,6 +97,9 @@ export default class Game extends React.Component {
 
   handleClick = e => {
     let [first, last] = e.target.id.split(",").map(num => +num);
+    if(!this.state.grid[first][last].active) {
+      this.setState({count: this.state.count + 1})
+    }
     this.setState(
       { activeColor: this.state.grid[first][last].color },
       () => {
@@ -113,9 +116,15 @@ export default class Game extends React.Component {
       return <DisplayRow tileRow={row} key={i} />;
     });
     return (
-      <div className="board" onClick={this.handleClick.bind(this)}>
-        {DisplayGrid}
-      </div>
+      <>
+        <div>
+          Current Count: {this.state.count}
+        </div>
+        <div className="board" onClick={this.handleClick.bind(this)}>
+          {DisplayGrid}
+        </div>
+        <button onClick={this.newGrid.bind(this)}>New Game</button>
+      </>
     );
   }
 }
